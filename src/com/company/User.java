@@ -28,11 +28,20 @@ public class User {
             System.out.println("There is no such product");
             return;
         }
-        Price productCurrency = productToBuy.getCost();
-        int productPrice = productCurrency.getCount();
-        int userMoney = money.getCount(productCurrency.getCurrency());
-        if (userMoney >= productPrice){
-            money.remove(productCurrency.getCurrency(), productPrice);
+
+        boolean moneyEnough = true;
+        Resources productCurrency = productToBuy.getResources();
+        for(Currency type: productCurrency.collection.keySet()){
+            int userMoney = money.getCount(type);
+            if(userMoney >= productToBuy.getResources().getCount(type)){
+                continue;
+            }
+            moneyEnough = false;
+        }
+        if (moneyEnough){
+            for(Currency type: productCurrency.collection.keySet()){
+                money.remove(type, productToBuy.getResources().getCount(type));
+            }
             currentShop.removeProduct(productToBuy,1);
         } else {
             System.out.println("not enough money");
@@ -47,15 +56,24 @@ public class User {
      */
     public void buyProduct(Shop currentShop, Product productToBuy, int count){
         int shopStorageCount = currentShop.getProductList().getCount(productToBuy);
-        if (shopStorageCount < count){
+        if (shopStorageCount < 1){
             System.out.println("There is no such product");
             return;
         }
-        Price productCurrency = productToBuy.getCost();
-        int productPrice = productCurrency.getCount();
-        int userMoney = money.getCount(productCurrency.getCurrency());
-        if (userMoney >= productPrice*count){
-            money.remove(productCurrency.getCurrency(), productPrice);
+
+        boolean moneyEnough = true;
+        Resources productCurrency = productToBuy.getResources();
+        for(Currency type: productCurrency.collection.keySet()){
+            int userMoney = money.getCount(type);
+            if(userMoney >= productToBuy.getResources().getCount(type) * count){
+                continue;
+            }
+            moneyEnough = false;
+        }
+        if (moneyEnough){
+            for(Currency type: productCurrency.collection.keySet()){
+                money.remove(type, productToBuy.getResources().getCount(type) * count);
+            }
             currentShop.removeProduct(productToBuy,count);
         } else {
             System.out.println("not enough money");
@@ -64,6 +82,6 @@ public class User {
 
 
     public void getMoney() {
-        System.out.println(); money.toString();
+        System.out.println(money.toString());
     }
 }

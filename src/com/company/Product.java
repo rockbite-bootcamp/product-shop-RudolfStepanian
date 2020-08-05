@@ -16,19 +16,19 @@ public class Product {
     /**
      * Resources lost after purchase
      */
-    private Price cost;
+    private Resources resources;
 
-    public Product(String name, Category category, Price cost) {
+    public Product(String name, Category category, Resources resources) {
         this.name = name;
         this.category = category;
-        this.cost = cost;
+        this.resources = resources;
     }
 
 
     public String getName() {
         return name;
     }
-    public Price getCost() {
-        return cost;
+    public Resources getResources() {
+        return resources;
     }
 }
