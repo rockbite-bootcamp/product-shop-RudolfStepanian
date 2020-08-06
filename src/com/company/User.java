@@ -30,17 +30,21 @@ public class User {
         }
 
         boolean moneyEnough = true;
-        Resources productCurrency = productToBuy.getResources();
+        Resources productCurrency = productToBuy.getResourcesLost();
+        Resources productGain = productToBuy.getResourcesGained();
         for(Currency type: productCurrency.collection.keySet()){
             int userMoney = money.getCount(type);
-            if(userMoney >= productToBuy.getResources().getCount(type)){
+            if(userMoney >= productToBuy.getResourcesLost().getCount(type)){
                 continue;
             }
             moneyEnough = false;
         }
         if (moneyEnough){
             for(Currency type: productCurrency.collection.keySet()){
-                money.remove(type, productToBuy.getResources().getCount(type));
+                money.remove(type, productToBuy.getResourcesLost().getCount(type));
+            }
+            for(Currency type: productGain.collection.keySet()){
+                getMoney().add(type, productToBuy.getResourcesGained().getCount(type));
             }
             currentShop.removeProduct(productToBuy,1);
         } else {
@@ -62,17 +66,21 @@ public class User {
         }
 
         boolean moneyEnough = true;
-        Resources productCurrency = productToBuy.getResources();
+        Resources productCurrency = productToBuy.getResourcesLost();
+        Resources productGain = productToBuy.getResourcesGained();
         for(Currency type: productCurrency.collection.keySet()){
             int userMoney = money.getCount(type);
-            if(userMoney >= productToBuy.getResources().getCount(type) * count){
+            if(userMoney >= productToBuy.getResourcesLost().getCount(type) * count){
                 continue;
             }
             moneyEnough = false;
         }
         if (moneyEnough){
             for(Currency type: productCurrency.collection.keySet()){
-                money.remove(type, productToBuy.getResources().getCount(type) * count);
+                money.remove(type, productToBuy.getResourcesLost().getCount(type) * count);
+            }
+            for(Currency type: productGain.collection.keySet()){
+                getMoney().add(type, productToBuy.getResourcesGained().getCount(type));
             }
             currentShop.removeProduct(productToBuy,count);
         } else {
@@ -81,7 +89,11 @@ public class User {
     }
 
 
-    public void getMoney() {
+    public void showMoney() {
         System.out.println(money.toString());
+    }
+
+    public Resources getMoney() {
+        return money;
     }
 }

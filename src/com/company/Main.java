@@ -25,8 +25,8 @@ public class Main {
 	    Resources r2 = new Resources();
 	    r2.add(l, 1000);
 	    r2.add(c, 200);
-	    Product p1 = new Product("product 1", category, r1);
-	    Product p2 = new Product("product 2", category, r2);
+	    Product p1 = new Product("product 1", category, r1, r2);
+	    Product p2 = new Product("product 2", category, r2, r1);
 
 
 		/**
@@ -42,10 +42,10 @@ public class Main {
 		/**
 		 * User buying 2 p2 products
 		 */
-		R.getMoney();
+		R.showMoney();
 		System.out.println(shop.getProductList().toString());
 	    R.buyProduct(shop,p2, 2);
-		R.getMoney();
+		R.showMoney();
 		System.out.println(shop.getProductList().toString());
     }
 }

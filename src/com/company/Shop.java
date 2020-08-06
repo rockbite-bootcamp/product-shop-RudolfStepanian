@@ -28,7 +28,34 @@ public class Shop {
     }
 
 
-    public void purchaseProduct(){
+    public void purchaseProduct(User user, Product productToSell, int count){
+        int shopStorageCount = getProductList().getCount(productToSell);
+        if (shopStorageCount < count){
+            System.out.println("There is no such product");
+            return;
+        }
+
+        boolean moneyEnough = true;
+        Resources productCurrency = productToSell.getResourcesLost();
+        Resources productGain = productToSell.getResourcesGained();
+        for(Currency type: productCurrency.collection.keySet()){
+            int userMoney = user.getMoney().getCount(type);
+            if(userMoney >= productToSell.getResourcesLost().getCount(type) * count){
+                continue;
+            }
+            moneyEnough = false;
+        }
+        if (moneyEnough){
+            for(Currency type: productCurrency.collection.keySet()){
+                user.getMoney().remove(type, productToSell.getResourcesLost().getCount(type));
+            }
+            for(Currency type: productGain.collection.keySet()){
+                user.getMoney().add(type, productToSell.getResourcesGained().getCount(type));
+            }
+            removeProduct(productToSell,count);
+        } else {
+            System.out.println("not enough money");
+        }
 
     }
 
