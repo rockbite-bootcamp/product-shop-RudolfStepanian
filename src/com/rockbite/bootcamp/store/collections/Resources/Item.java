@@ -1,8 +1,6 @@
 package com.rockbite.bootcamp.store.collections.Resources;
 
-import com.rockbite.bootcamp.store.collections.ICollectionItem;
-
-public class Item implements ICollectionItem {
+public class Item {
     private String name;
 
     public Item(String name) {

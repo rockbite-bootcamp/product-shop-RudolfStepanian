@@ -5,6 +5,7 @@ import com.rockbite.bootcamp.store.IInventory;
 import com.rockbite.bootcamp.store.Pool.IPool;
 import com.rockbite.bootcamp.store.Pool.Pool;
 import com.rockbite.bootcamp.store.Product;
+import com.rockbite.bootcamp.store.User;
 import com.rockbite.bootcamp.store.collections.Inventory.Inventory;
 import com.rockbite.bootcamp.store.collections.Resources.Item;
 
@@ -23,6 +24,7 @@ public class Shop implements IShop, IPool {
      * operation in shop count
      */
     private Integer operationCounter = 0;
+    private Integer reOperationCounter = 0;
     /**
      * shop manager
      */
@@ -116,13 +118,32 @@ public class Shop implements IShop, IPool {
     }
 
     public void undoPurchase(){
-        manager.executeCommand
-                (incrementCommandPool.obtain
-                        (incrementCommandPool.usedObjects.get(operationCounter-1)));
+        if(this.operationCounter < 1){
+            return;
+        }
+        IncrementCommand data = incrementCommandPool.usedObjects.get(operationCounter-1);
+        IInventory userToReturn = data.getUser();
+        Product productToReturn = data.getProduct();
+        for(Item item: productToReturn.getPrice().getCollection().keySet()) {
+            int count = productToReturn.getPrice().getCollection().get(item);
+            userToReturn.addItem(item, count);
+        }
+        for (Item item: productToReturn.getPayload().getCollection().keySet()) {
+            int count = productToReturn.getPayload().getCollection().get(item);
+            userToReturn.spendItem(item, count);
+        }
+        incrementCommandPool.free(incrementCommandPool.usedObjects.get(operationCounter-1));
+        this.operationCounter--;
+        this.reOperationCounter++;
     }
 
     public void redoPurchase(){
-
+        if(this.reOperationCounter < 1){
+            return;
+        }
+        IncrementCommand data = incrementCommandPool.freeObjects.get(reOperationCounter-1);
+        incrementCommandPool.obtain(incrementCommandPool.freeObjects.get(reOperationCounter-1));
+        transaction(data.getUser(),data.getProduct());
     }
 
 

@@ -8,13 +8,11 @@ public class CommandManager {
 
     public void executeCommand(IRedoUndo command){
         command.execute();
-
         if (cursor < history.size()){
             history.set(cursor, command);
         } else {
             history.add(command);
         }
-
         cursor++;
     }
 
@@ -24,7 +22,6 @@ public class CommandManager {
         }
         IRedoUndo command = history.get(cursor-1);
         command.undo();
-
         cursor--;
     }
 

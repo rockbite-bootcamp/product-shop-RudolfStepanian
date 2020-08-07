@@ -12,7 +12,7 @@ public class Resources extends Collections<Item> {
     public String toString() {
         String string = "";
         for(Item type: collection.keySet()){
-//            string += type.getType() + ": " + getCount(type) + "\n";
+            string += type.toString() + ": " + getCount(type) + "\n";
         }
         return string;
     }

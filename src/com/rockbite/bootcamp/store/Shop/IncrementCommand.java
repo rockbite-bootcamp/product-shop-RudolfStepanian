@@ -22,15 +22,24 @@ public class IncrementCommand implements IRedoUndo {
 
     @Override
     public void execute() {
-        System.out.println(user.toString()+product.toString());
+        shop.undoPurchase();
     }
 
     @Override
     public void undo() {
+        shop.redoPurchase();
     }
 
     @Override
     public void reset() {
 
+    }
+
+    public IInventory getUser() {
+        return user;
+    }
+
+    public Product getProduct() {
+        return product;
     }
 }

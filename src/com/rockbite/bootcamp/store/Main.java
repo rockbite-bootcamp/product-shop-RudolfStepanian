@@ -8,32 +8,35 @@ import com.rockbite.bootcamp.store.collections.Resources.Item;
 public class Main {
 
     public static void main(String[] args) {
+        /**
+         * creating instances to work with
+         */
         Shop S = new Shop();
         User U = new User();
         Item I = new Item("I");
         Product P = new Product("P");
-
         U.addItem(I,500);
         P.addPrice(I,400);
         P.addPayload(I,450);
+        /**
+         * user purchase product
+         */
         S.transaction(U,P);
-
+        System.out.println(U.toString());
         System.out.println(S.incrementCommandPool.toString());
 
+        /**
+         * user return product to shop
+         */
         S.undoPurchase();
+        System.out.println(U.toString());
+        System.out.println(S.incrementCommandPool.toString());
 
-//        S.manager.executeCommand(S.incrementCommandPool.obtain(S.incrementCommandPool.usedObjects.get(0)));
-//
-//        System.out.println(S.incrementCommandPool.toString());
-//        System.out.println(S.incrementCommandPool.toString());
-
-
-//        IncrementCommand yv = S.incrementCommandPool.obtain();
-//        IncrementCommand ub = S.incrementCommandPool.obtain();
-//        S.decrementCommandPool.obtain();
-
-//        S.manager.undo();
-
-
+        /**
+         * user buys product again (redo function used)
+         */
+        S.redoPurchase();
+        System.out.println(U.toString());
+        System.out.println(S.incrementCommandPool.toString());
     }
 }

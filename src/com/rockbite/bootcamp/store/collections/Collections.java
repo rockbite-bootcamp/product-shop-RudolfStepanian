@@ -13,7 +13,6 @@ public abstract class Collections<T>{
         return this.collection;
     }
 
-
     /**
      * adding element to collection
      * @param product
