@@ -1,4 +1,4 @@
-package com.company;
+package com.rockbite.bootcamp.store;
 
 public class Category {
     /**

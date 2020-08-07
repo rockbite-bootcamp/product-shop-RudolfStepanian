@@ -1,16 +1,25 @@
-package com.company;
+package com.rockbite.bootcamp.store.collections;
 
 import java.util.HashMap;
 
 public abstract class Collections<T>{
-    HashMap<T,Integer> collection = new HashMap<>();
+    protected HashMap<T,Integer> collection = new HashMap<>();
+
+    /**
+     * get function for collection
+     * @return
+     */
+    public HashMap<T,Integer> getCollection() {
+        return this.collection;
+    }
+
 
     /**
      * adding element to collection
      * @param product
      * @param count
      */
-    public void add(T product, int count) {
+    public void addItem(T product, int count) {
         if (collection.get(product) == null){
             collection.put(product, count);
         } else {
@@ -23,10 +32,8 @@ public abstract class Collections<T>{
      * @param curr
      * @param count
      */
-    public void remove(T curr, int count) {
-        if (collection.get(curr) == null || collection.get(curr)<count){
-            return;
-        } else {
+    public void removeItem(T curr, int count) {
+        if (!(collection.get(curr) == null || collection.get(curr)<count)){
             collection.put(curr, collection.get(curr) - count);
         }
     }
