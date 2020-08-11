@@ -9,6 +9,8 @@ import com.rockbite.bootcamp.store.User;
 import com.rockbite.bootcamp.store.collections.Inventory.Inventory;
 import com.rockbite.bootcamp.store.collections.Resources.Item;
 
+import java.util.HashMap;
+
 public class Shop implements IShop, IPool {
     /**
      * identification for Shop
@@ -18,8 +20,6 @@ public class Shop implements IShop, IPool {
      * list of products in shop with their prices
      */
     private Inventory productList = new Inventory();
-
-
     /**
      * operation in shop count
      */
@@ -29,6 +29,11 @@ public class Shop implements IShop, IPool {
      * shop manager
      */
     public CommandManager manager = new CommandManager();
+    /**
+     * List of last order from customers
+     */
+    public HashMap<IInventory, Integer> customersList = new HashMap<>();
+
     public Pool<IncrementCommand> incrementCommandPool = new Pool<IncrementCommand>() {
         @Override
         protected IncrementCommand newObject() {
@@ -41,10 +46,6 @@ public class Shop implements IShop, IPool {
             return new DecrementCommand();
         }
     };
-
-
-
-
 
 
     /**
@@ -88,7 +89,7 @@ public class Shop implements IShop, IPool {
                 }
             }
         }
-            return true;
+        return true;
     }
 
     @Override
@@ -108,6 +109,7 @@ public class Shop implements IShop, IPool {
                 }
                 System.out.println("transaction completed");
                 incrementCommandPool.obtain(new IncrementCommand(user, product,this));
+                this.customersList.put(user,this.operationCounter);
                 this.operationCounter++;
                 return;
             }
@@ -115,6 +117,28 @@ public class Shop implements IShop, IPool {
         System.out.println("transaction impossible");
         return;
 
+    }
+
+    public void undoPurchase(User user){
+        if(this.operationCounter < 1){
+            return;
+        }
+        int index = this.customersList.get(user);
+        IncrementCommand data = incrementCommandPool.usedObjects.get(index);
+        System.out.println(data);
+        IInventory userToReturn = data.getUser();
+        Product productToReturn = data.getProduct();
+        for(Item item: productToReturn.getPrice().getCollection().keySet()) {
+            int count = productToReturn.getPrice().getCollection().get(item);
+            userToReturn.addItem(item, count);
+        }
+        for (Item item: productToReturn.getPayload().getCollection().keySet()) {
+            int count = productToReturn.getPayload().getCollection().get(item);
+            userToReturn.spendItem(item, count);
+        }
+        incrementCommandPool.free(incrementCommandPool.usedObjects.get(operationCounter-1));
+        this.operationCounter--;
+        this.reOperationCounter++;
     }
 
     public void undoPurchase(){

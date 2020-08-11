@@ -1,6 +1,5 @@
 package com.rockbite.bootcamp.store;
 
-import com.rockbite.bootcamp.store.collections.Inventory.Inventory;
 import com.rockbite.bootcamp.store.collections.Resources.Item;
 import com.rockbite.bootcamp.store.collections.Resources.Resources;
 
