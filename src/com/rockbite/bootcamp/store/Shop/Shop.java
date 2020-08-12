@@ -47,16 +47,6 @@ public class Shop implements IShop, IPool {
         }
     };
 
-
-    /**
-     * adding products to shop storage
-     * @param product
-     * @param count
-     */
-    public void addProduct(Product product, int count){
-        productList.addItem(product, count);
-    }
-
     /**
      * remove products frome storage
      * @param product
@@ -74,15 +64,20 @@ public class Shop implements IShop, IPool {
         return productList;
     }
 
+    /**
+     * adding products to shop storage
+     * @param product
+     * @param count
+     */
     @Override
     public void getProduct(Product product, int count) {
-
+        productList.addItem(product, count);
     }
 
     @Override
     public boolean canAfford(IInventory user, Product product) {
-        if (productList.getCollection().get(product)!=null){
-            for (Item item: product.getPrice().getCollection().keySet()) {
+        if ( productList.getCollection().get(product) != null ) {
+            for ( Item item: product.getPrice().getCollection().keySet() ) {
                 int count = product.getPrice().getCollection().get(item);
                 if (!user.hasItem(item, count)) {
                     return false;
@@ -93,17 +88,17 @@ public class Shop implements IShop, IPool {
     }
 
     @Override
-    public void transaction(IInventory user, Product product) {
+    public boolean transaction(IInventory user, Product product) {
 
         if (product != null) {
 
-            if (canAfford(user, product)) {
-                for(Item item: product.getPrice().getCollection().keySet()) {
+            if ( canAfford(user, product) ) {
+                for ( Item item: product.getPrice().getCollection().keySet() ) {
                     int count = product.getPrice().getCollection().get(item);
                     user.spendItem(item, count);
                 }
 
-                for (Item item: product.getPayload().getCollection().keySet()) {
+                for ( Item item: product.getPayload().getCollection().keySet() ) {
                     int count = product.getPayload().getCollection().get(item);
                     user.addItem(item, count);
                 }
@@ -111,16 +106,16 @@ public class Shop implements IShop, IPool {
                 incrementCommandPool.obtain(new IncrementCommand(user, product,this));
                 this.customersList.put(user,this.operationCounter);
                 this.operationCounter++;
-                return;
+                return true;
             }
         }
         System.out.println("transaction impossible");
-        return;
+        return false;
 
     }
 
     public void undoPurchase(User user){
-        if(this.operationCounter < 1){
+        if( this.operationCounter < 1 ) {
             return;
         }
         int index = this.customersList.get(user);
@@ -128,11 +123,11 @@ public class Shop implements IShop, IPool {
         System.out.println(data);
         IInventory userToReturn = data.getUser();
         Product productToReturn = data.getProduct();
-        for(Item item: productToReturn.getPrice().getCollection().keySet()) {
+        for ( Item item: productToReturn.getPrice().getCollection().keySet() ) {
             int count = productToReturn.getPrice().getCollection().get(item);
             userToReturn.addItem(item, count);
         }
-        for (Item item: productToReturn.getPayload().getCollection().keySet()) {
+        for ( Item item: productToReturn.getPayload().getCollection().keySet() ) {
             int count = productToReturn.getPayload().getCollection().get(item);
             userToReturn.spendItem(item, count);
         }
@@ -142,17 +137,17 @@ public class Shop implements IShop, IPool {
     }
 
     public void undoPurchase(){
-        if(this.operationCounter < 1){
+        if( this.operationCounter < 1 ) {
             return;
         }
         IncrementCommand data = incrementCommandPool.usedObjects.get(operationCounter-1);
         IInventory userToReturn = data.getUser();
         Product productToReturn = data.getProduct();
-        for(Item item: productToReturn.getPrice().getCollection().keySet()) {
+        for( Item item: productToReturn.getPrice().getCollection().keySet() ) {
             int count = productToReturn.getPrice().getCollection().get(item);
             userToReturn.addItem(item, count);
         }
-        for (Item item: productToReturn.getPayload().getCollection().keySet()) {
+        for ( Item item: productToReturn.getPayload().getCollection().keySet() ) {
             int count = productToReturn.getPayload().getCollection().get(item);
             userToReturn.spendItem(item, count);
         }
@@ -162,14 +157,13 @@ public class Shop implements IShop, IPool {
     }
 
     public void redoPurchase(){
-        if(this.reOperationCounter < 1){
+        if( this.reOperationCounter < 1 ) {
             return;
         }
         IncrementCommand data = incrementCommandPool.freeObjects.get(reOperationCounter-1);
         incrementCommandPool.obtain(incrementCommandPool.freeObjects.get(reOperationCounter-1));
         transaction(data.getUser(),data.getProduct());
     }
-
 
     @Override
     public void reset() {

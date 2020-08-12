@@ -15,7 +15,7 @@ public class Product {
     }
 
     public void addPrice(Item item, Integer count){
-        price.addItem(item,count);
+        price.addItem(item, count);
     }
     public void addPayload(Item item, Integer count){
         payload.addItem(item, count);
