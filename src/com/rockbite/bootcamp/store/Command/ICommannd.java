@@ -2,7 +2,7 @@ package com.rockbite.bootcamp.store.Command;
 
 import com.rockbite.bootcamp.store.Pool.IPool;
 
-public interface IRedoUndo extends IPool {
+public interface ICommannd extends IPool {
 
     void execute();
 

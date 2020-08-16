@@ -8,10 +8,6 @@ import com.rockbite.bootcamp.store.collections.Resources.Item;
 public class Main {
 
     public static void main(String[] args) {
-        /**
-         * creating instances to work with
-         */
-        Shop S = new Shop();
         User U1 = new User();
         User U2 = new User();
         Item I = new Item("I");
@@ -23,28 +19,30 @@ public class Main {
         /**
          * user purchase product
          */
-        S.transaction(U1,P);
-        S.transaction(U2,P);
+        Shop.getShopInstance().transaction(U1,P);
+        Shop.getShopInstance().transaction(U2,P);
         System.out.println("U1 : " + U1.toString());
         System.out.println("U2 : " + U2.toString());
-        System.out.println(S.incrementCommandPool.toString());
+        System.out.println(Shop.getShopInstance().incrementCommandPool.toString());
 
         /**
          * user return product to shop
          */
-//        S.undoPurchase();
         System.out.println("U1 : " + U1.toString());
         System.out.println("U2 : " + U2.toString());
-        System.out.println(S.incrementCommandPool.toString());
-        S.undoPurchase(U2);
-        S.undoPurchase(U1);
+        U2.undoPurchase();
+        U1.undoPurchase();
+        System.out.println(Shop.getShopInstance().incrementCommandPool.toString());
+//        Shop.getShopInstance().undoPurchase(U2);
+//        Shop.getShopInstance().undoPurchase(U1);
 
         /**
          * user buys product again (redo function used)
          */
-        S.redoPurchase();
         System.out.println("U1 : " + U1.toString());
         System.out.println("U2 : " + U2.toString());
-        System.out.println(S.incrementCommandPool.toString());
+        U1.redoPurchase();
+        U2.redoPurchase();
+//        System.out.println(Shop.getShopInstance().incrementCommandPool.toString());
     }
 }

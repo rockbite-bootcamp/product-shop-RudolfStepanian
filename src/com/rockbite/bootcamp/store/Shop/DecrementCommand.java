@@ -1,9 +1,8 @@
 package com.rockbite.bootcamp.store.Shop;
 
-import com.rockbite.bootcamp.store.Command.IRedoUndo;
-import com.rockbite.bootcamp.store.Singleton.PurchaseCount;
+import com.rockbite.bootcamp.store.Command.ICommannd;
 
-public class DecrementCommand implements IRedoUndo {
+public class DecrementCommand implements ICommannd {
     @Override
     public void execute() {
 

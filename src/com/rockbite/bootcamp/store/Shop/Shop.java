@@ -1,6 +1,5 @@
 package com.rockbite.bootcamp.store.Shop;
 
-import com.rockbite.bootcamp.store.Command.CommandManager;
 import com.rockbite.bootcamp.store.IInventory;
 import com.rockbite.bootcamp.store.Pool.IPool;
 import com.rockbite.bootcamp.store.Pool.Pool;
@@ -12,6 +11,7 @@ import com.rockbite.bootcamp.store.collections.Resources.Item;
 import java.util.HashMap;
 
 public class Shop implements IShop, IPool {
+    private static Shop shopInstance;
     /**
      * identification for Shop
      */
@@ -25,14 +25,6 @@ public class Shop implements IShop, IPool {
      */
     private Integer operationCounter = 0;
     private Integer reOperationCounter = 0;
-    /**
-     * shop manager
-     */
-    public CommandManager manager = new CommandManager();
-    /**
-     * List of last order from customers
-     */
-    public HashMap<IInventory, Integer> customersList = new HashMap<>();
 
     public Pool<IncrementCommand> incrementCommandPool = new Pool<IncrementCommand>() {
         @Override
@@ -46,6 +38,14 @@ public class Shop implements IShop, IPool {
             return new DecrementCommand();
         }
     };
+
+    private Shop(){}
+    public static Shop getShopInstance(){
+        if(shopInstance == null){
+            shopInstance = new Shop();
+        }
+        return shopInstance;
+    }
 
     /**
      * remove products frome storage
@@ -88,6 +88,19 @@ public class Shop implements IShop, IPool {
     }
 
     @Override
+    public boolean canReturn(IInventory user, Product product) {
+        if ( productList.getCollection().get(product) != null ) {
+            for ( Item item: product.getPayload().getCollection().keySet() ) {
+                int count = product.getPayload().getCollection().get(item);
+                if (!user.hasItem(item, count)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean transaction(IInventory user, Product product) {
 
         if (product != null) {
@@ -103,8 +116,9 @@ public class Shop implements IShop, IPool {
                     user.addItem(item, count);
                 }
                 System.out.println("transaction completed");
-                incrementCommandPool.obtain(new IncrementCommand(user, product,this));
-                this.customersList.put(user,this.operationCounter);
+                IncrementCommand transaction = new IncrementCommand(user, product);
+                user.setLastTransaction(transaction);
+                incrementCommandPool.obtain(transaction);
                 this.operationCounter++;
                 return true;
             }
@@ -114,55 +128,25 @@ public class Shop implements IShop, IPool {
 
     }
 
-    public void undoPurchase(User user){
-        if( this.operationCounter < 1 ) {
-            return;
-        }
-        int index = this.customersList.get(user);
-        IncrementCommand data = incrementCommandPool.usedObjects.get(index);
-        System.out.println(data);
-        IInventory userToReturn = data.getUser();
-        Product productToReturn = data.getProduct();
-        for ( Item item: productToReturn.getPrice().getCollection().keySet() ) {
-            int count = productToReturn.getPrice().getCollection().get(item);
-            userToReturn.addItem(item, count);
-        }
-        for ( Item item: productToReturn.getPayload().getCollection().keySet() ) {
-            int count = productToReturn.getPayload().getCollection().get(item);
-            userToReturn.spendItem(item, count);
-        }
-        incrementCommandPool.free(incrementCommandPool.usedObjects.get(operationCounter-1));
-        this.operationCounter--;
-        this.reOperationCounter++;
-    }
+    public boolean takeBackProduct(IInventory user, Product product){
+        if (product != null) {
+            if ( canReturn(user, product) ) {
+                for ( Item item: product.getPayload().getCollection().keySet() ) {
+                    int count = product.getPayload().getCollection().get(item);
+                    user.spendItem(item, count);
+                }
 
-    public void undoPurchase(){
-        if( this.operationCounter < 1 ) {
-            return;
+                for ( Item item: product.getPrice().getCollection().keySet() ) {
+                    int count = product.getPrice().getCollection().get(item);
+                    user.addItem(item, count);
+                }
+                System.out.println("transaction completed");
+                this.operationCounter++;
+                return true;
+            }
         }
-        IncrementCommand data = incrementCommandPool.usedObjects.get(operationCounter-1);
-        IInventory userToReturn = data.getUser();
-        Product productToReturn = data.getProduct();
-        for( Item item: productToReturn.getPrice().getCollection().keySet() ) {
-            int count = productToReturn.getPrice().getCollection().get(item);
-            userToReturn.addItem(item, count);
-        }
-        for ( Item item: productToReturn.getPayload().getCollection().keySet() ) {
-            int count = productToReturn.getPayload().getCollection().get(item);
-            userToReturn.spendItem(item, count);
-        }
-        incrementCommandPool.free(incrementCommandPool.usedObjects.get(operationCounter-1));
-        this.operationCounter--;
-        this.reOperationCounter++;
-    }
-
-    public void redoPurchase(){
-        if( this.reOperationCounter < 1 ) {
-            return;
-        }
-        IncrementCommand data = incrementCommandPool.freeObjects.get(reOperationCounter-1);
-        incrementCommandPool.obtain(incrementCommandPool.freeObjects.get(reOperationCounter-1));
-        transaction(data.getUser(),data.getProduct());
+        System.out.println("transaction impossible");
+        return false;
     }
 
     @Override

@@ -6,8 +6,6 @@ public abstract class Pool<T extends IPool> {
     public ArrayList<T> freeObjects = new ArrayList<>();
     public ArrayList<T> usedObjects = new ArrayList<>();
 
-    public Pool(){}
-
     protected abstract T newObject();
 
     public T obtain(){
@@ -34,9 +32,7 @@ public abstract class Pool<T extends IPool> {
 
     @Override
     public String toString() {
-        return "Pool{\n" +
-                "freeObjects=" + freeObjects + "\n" +
-                "usedObjects=" + usedObjects + "\n" +
-                '}';
+        return "freeObjects=" + freeObjects + "\n" +
+               "usedObjects=" + usedObjects + "\n";
     }
 }

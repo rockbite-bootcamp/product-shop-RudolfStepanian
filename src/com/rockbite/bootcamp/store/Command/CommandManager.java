@@ -3,10 +3,10 @@ package com.rockbite.bootcamp.store.Command;
 import java.util.ArrayList;
 
 public class CommandManager {
-    ArrayList<IRedoUndo> history = new ArrayList<>();
+    ArrayList<ICommannd> history = new ArrayList<>();
     private int cursor = 0;
 
-    public void executeCommand(IRedoUndo command){
+    public void executeCommand(ICommannd command){
         command.execute();
         if (cursor < history.size()){
             history.set(cursor, command);
@@ -20,7 +20,7 @@ public class CommandManager {
         if(cursor == 0){
             return;
         }
-        IRedoUndo command = history.get(cursor-1);
+        ICommannd command = history.get(cursor-1);
         command.undo();
         cursor--;
     }
@@ -29,7 +29,7 @@ public class CommandManager {
         if (cursor >= history.size()){
             return;
         }
-        IRedoUndo command = history.get(cursor-1);
+        ICommannd command = history.get(cursor-1);
         command.execute();
         cursor++;
     }

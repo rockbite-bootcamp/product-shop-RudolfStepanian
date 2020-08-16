@@ -20,6 +20,14 @@ public interface IShop {
     boolean canAfford(IInventory user, Product it);
 
     /**
+     * return boolean value in case if user can return it product
+     * @param user
+     * @param it
+     * @return
+     */
+    boolean canReturn(IInventory user, Product it);
+
+    /**
      * transaction function
      * @param user
      * @param it

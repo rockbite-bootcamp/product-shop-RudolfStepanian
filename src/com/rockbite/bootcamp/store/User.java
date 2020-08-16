@@ -1,5 +1,8 @@
 package com.rockbite.bootcamp.store;
 
+import com.rockbite.bootcamp.store.Command.ICommannd;
+import com.rockbite.bootcamp.store.Shop.IncrementCommand;
+import com.rockbite.bootcamp.store.Shop.Shop;
 import com.rockbite.bootcamp.store.collections.Resources.Item;
 import com.rockbite.bootcamp.store.collections.Resources.Resources;
 
@@ -15,6 +18,8 @@ public class User implements IInventory {
      */
     private Resources itemList;
 
+    private IncrementCommand LastTransaction = null;
+
     public User() {
         this.itemList = new Resources();
     }
@@ -25,6 +30,24 @@ public class User implements IInventory {
 
     public Resources getInventory() {
         return itemList;
+    }
+
+    public void setLastTransaction(IncrementCommand lastTransaction) {
+        this.LastTransaction = lastTransaction;
+    }
+
+    @Override
+    public IncrementCommand getLastTransaction() {
+        return null;
+    }
+
+    public void undoPurchase(){
+        Shop.getShopInstance().takeBackProduct(this,this.LastTransaction.getProduct());
+        Shop.getShopInstance().incrementCommandPool.free(this.LastTransaction);
+    }
+
+    public void redoPurchase(){
+        Shop.getShopInstance().transaction(this,this.LastTransaction.getProduct());
     }
 
     @Override
